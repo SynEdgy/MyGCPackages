@@ -24,7 +24,7 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'windows-latest'
         steps:
           - task: GitVersion@5
             name: gitVersion
@@ -52,33 +52,6 @@ stages:
   - stage: Test
     dependsOn: Build
     jobs:
-      - job: Test_HQRM
-        displayName: 'HQRM'
-        pool:
-          vmImage: 'windows-2019'
-        timeoutInMinutes: 0
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Build Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run HQRM Test'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-Tasks hqrmtest'
-              pwsh: false
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'HQRM'
-
       # If several pipeline jobs are running test, consider renaming this job:
       - job: Test_Unit
         displayName: 'Unit'
@@ -116,82 +89,11 @@ stages:
               #artifactName: 'CodeCoverageWindows' # Can be any, in the pipeline, unique name
               parallel: true
 
-      # If several pipeline jobs should run unit tests, uncomment this:
-      ## If several pipeline jobs are generating test result consider renaming this:
-      #- job: Test_Unit_Linux
-      #  displayName: 'Unit Linux'
-      #  pool:
-      #    vmImage: 'ubuntu 16.04'
-      #  timeoutInMinutes: 0
-      #  steps:
-      #    - task: DownloadPipelineArtifact@2
-      #      displayName: 'Download Build Artifact'
-      #      inputs:
-      #        buildType: 'current'
-      #        artifactName: $(buildArtifactName)
-      #        targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #    - task: PowerShell@2
-      #      name: test
-      #      displayName: 'Run Unit Test'
-      #      inputs:
-      #        filePath: './build.ps1'
-      #        arguments: "-Tasks test -PesterScript 'tests/Unit'"
-      #        pwsh: true
-      #    - task: PublishTestResults@2
-      #      displayName: 'Publish Test Results'
-      #      condition: succeededOrFailed()
-      #      inputs:
-      #        testResultsFormat: 'NUnit'
-      #        testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #        # If several pipeline jobs are generating test result consider renaming this:
-      #        testRunTitle: 'Unit Linux'
-      #    - task: PublishPipelineArtifact@1
-      #      displayName: 'Publish Test Artifact'
-      #      inputs:
-      #        targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-      #        # If several pipeline jobs are generating code coverage, consider renaming this:
-      #        artifactName: 'CodeCoverageLinux' # Can be any, in the pipeline, unique name
-      #        parallel: true
-
-      - job: Test_Integration
-        displayName: 'Integration'
-        pool:
-          vmImage: 'windows-2019'
-        timeoutInMinutes: 0
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Build Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-          - task: PowerShell@2
-            name: configureWinRM
-            displayName: 'Configure WinRM'
-            inputs:
-              targetType: 'inline'
-              script: 'winrm quickconfig -quiet'
-              pwsh: false
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run Integration Test'
-            inputs:
-              filePath: './build.ps1'
-              arguments: "-Tasks test -CodeCoverageThreshold 0 -PesterScript 'tests/Integration'"
-              pwsh: false
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Integration'
-
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'windows-latest'
         timeoutInMinutes: 0
         steps:
           - pwsh: |
@@ -247,13 +149,13 @@ stages:
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
-        contains(variables['System.TeamFoundationCollectionUri'], 'dsccommunity')
+        contains(variables['System.TeamFoundationCollectionUri'], 'synedgy')
       )
     jobs:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'windows-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -280,4 +182,3 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
-

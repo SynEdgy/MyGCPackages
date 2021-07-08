@@ -28,4 +28,6 @@
             AllowPrerelease = $true
         }
     }
+
+    xPSDesiredStateConfiguration = 'latest'
 }

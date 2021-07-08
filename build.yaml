@@ -6,7 +6,7 @@
 # SourcePath: ./Sampler/Sampler.psd1
 # Output Directory where ModuleBuilder will build the Module, relative to module manifest
 # OutputDirectory: ../output/Sampler
-BuiltSubmoduleDirectory: module
+BuiltModuleSubdirectory: module
 CopyPaths:
   - en-US
 #  - DSCResources
@@ -57,6 +57,7 @@ BuildWorkflow:
   pack:
     - build
     - package_module_nupkg
+    - gcpack
 
   hqrmtest:
     - DscResource_Tests_Stop_On_Fail
