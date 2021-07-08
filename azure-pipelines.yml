@@ -33,11 +33,26 @@ stages:
               runtime: 'core'
               configFilePath: 'GitVersion.yml'
           - task: PowerShell@2
+            name: Enable Exp Feature
+            displayName: 'Build & Package Module'
+            inputs:
+              pwsh: true
+              targetType: inline
+              continueOnError: true
+              script: |
+                  ./build.ps1 -Tasks noop -ResolveDependency
+                  Import-Module GuestConfiguration
+                  Enable-ExperimentalFeature -Name GuestConfiguration.Pester
+                  Enable-ExperimentalFeature -Name GuestConfiguration.SetScenario
+                  Enable-ExperimentalFeature -Name PSDesiredStateConfiguration.InvokeDscResource -ErrorAction SilentlyContinue
+            env:
+              ModuleVersion: $(gitVersion.NuGetVersionV2)
+          - task: PowerShell@2
             name: package
             displayName: 'Build & Package Module'
             inputs:
               filePath: './build.ps1'
-              arguments: '-ResolveDependency -tasks pack'
+              arguments: '-tasks pack'
               pwsh: true
             env:
               ModuleVersion: $(gitVersion.NuGetVersionV2)
