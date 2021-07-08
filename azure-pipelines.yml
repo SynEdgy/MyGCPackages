@@ -33,8 +33,8 @@ stages:
               runtime: 'core'
               configFilePath: 'GitVersion.yml'
           - task: PowerShell@2
-            name: Enable Exp Feature
-            displayName: 'Build & Package Module'
+            name: Exp_Feature
+            displayName: 'Enable Experimental features'
             inputs:
               pwsh: true
               targetType: inline
