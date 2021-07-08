@@ -21,7 +21,7 @@ ModuleVersion = '0.0.1'
 GUID = '918df7cd-690f-449c-b2b0-f30a7fe2cd84'
 
 # Author of this module
-Author = 'GaelColas'
+Author = 'Gael Colas'
 
 # Company or vendor of this module
 CompanyName = 'Unknown'
@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) GaelColas. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'An example of GC packages.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -130,6 +130,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-
-
-
